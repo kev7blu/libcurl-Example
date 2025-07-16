@@ -5,7 +5,8 @@ INCLUDES=
 LFLAGS=-L/usr/lib/x86_64-linux-gnu
 LIBS=-lcurl -lpthread
 
-SRC=requestor.c
+#SRC=requestor.c
+SRC=networkCommARM.c
 OBJ=$(SRC:.c=.o)
 MAIN=test
 

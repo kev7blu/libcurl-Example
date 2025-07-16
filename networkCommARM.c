@@ -24,41 +24,50 @@ int print_usage()
 
 int main(int argc, char *argv[])
 {
-    uint32_t option;
+    int option;
     uint32_t verbSelected = 0;
 
-	char urlBuffer[128] = "";
-	char txtBuffer[256] = "";
+	char urlBuffer[128];
+	char txtBuffer[256];
 
 	CURL	*curl;
 	CURLcode  res;
 	struct curl_slist *headers = NULL;
 
 	curl = curl_easy_init();
+	if (curl)
+		printf("pass\n");
+	else
+		printf("fail\n");
 
-    while((option = getopt(argc,  argv, "ogpduh")) !=-1)
+    while((option = getopt(argc,  argv, "ogpdu:h")) !=-1)
     {
         switch(option)
         {
+			case 'h': // --HELP
+				print_usage();
+				break;
             case 'o': // --POST
-				verbSelected != 0x0u ? verbSelected = 0x1111u : print_usage();
+				verbSelected == 0x0u ? verbSelected = 0x1111u: print_usage();
 				break;
             case 'g': // -- GET
-				verbSelected != 0x0u ? verbSelected = 0x3333u : print_usage();
+				verbSelected == 0x0u ? verbSelected = 0x3333u : print_usage();
+				printf("so far so good\n");
 				break;
             case 'p': // -- PUT
-				verbSelected != 0x0u ? verbSelected = 0x5555u : print_usage();
+				verbSelected == 0x0u ? verbSelected = 0x5555u : print_usage();
 				break;
             case 'd': // -- DELETE
-				verbSelected != 0x0u ? verbSelected = 0x7777u : print_usage();
+				verbSelected == 0x0u ? verbSelected = 0x7777u : print_usage();
 				break;
-			 case 'u': // --url
+			case 'u': // --url
 			 	if (verbSelected == 0u)
 				{
 					printf("ERROR: Please select HTTP verb first.\n");
 					print_usage();
 				}
 				strcpy(urlBuffer, optarg);
+				printf("buffer is: %s\n", urlBuffer);
 				switch (verbSelected)
 				{
 					case 0x1111u: // --POST
@@ -92,6 +101,7 @@ int main(int argc, char *argv[])
 								return REQ_ERR;
 							}
 							curl_easy_cleanup(curl);
+							return OK;
 						} 
 						else 
 						{
@@ -108,7 +118,7 @@ int main(int argc, char *argv[])
 							curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long)strlen(txtBuffer));
 							headers = curl_slist_append(headers, "Content-Type: text/plain");
 							curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-							res = curl_easy_perform(curl)
+							res = curl_easy_perform(curl);
 							if (res != CURLE_OK) 
 							{
 								return REQ_ERR;
@@ -126,7 +136,7 @@ int main(int argc, char *argv[])
 							strcpy(txtBuffer, optarg);
 							curl_easy_setopt(curl, CURLOPT_URL, urlBuffer);
 							curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "DELETE");
-							res = curl_easy_perform(curl)
+							res = curl_easy_perform(curl);
 							if (res != CURLE_OK) 
 							{
 								return REQ_ERR;
@@ -139,11 +149,7 @@ int main(int argc, char *argv[])
 						}
 						break;
 					default:
-						
 				}
-            case 'h': // -- help
-				print_usage();
-				break;
         }
     }
 
