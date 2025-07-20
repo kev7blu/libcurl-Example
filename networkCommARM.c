@@ -1,3 +1,6 @@
+/buildroot/output/host/usr/bin/arm-linux-gcc --sysroot=/buildroot/output/staging  -c networkCommARM.c -o networkCommARM.o
+/buildroot/output/host/usr/bin/arm-linux-gcc --sysroot=/buildroot/output/staging  -o test networkCommARM.o  -lcurl -uClibc -lc
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -11,21 +14,26 @@
 #define USE_ERR 3
 
 // prints various command line arguments formats for selection
-int print_usage()
+void print_usage()
 {
     printf("usage: test [options] \n");
-	printf("\t-o -u <address> <text>    , --POST \n");
-	printf("\t-g -u <address>           , --GET\n");
-	printf("\t-p -u <address> <text>    , --POST\n");
-	printf("\t-d -u <address><directory>, --DELETE\n");
-	printf("\t-h, for help\n");
+	printf("\t-o -u <address> <text> , --POST\n");
+	printf("\t-g -u <address>        , --GET\n");
+	printf("\t-p -u <address> <text> , --POST\n");
+	printf("\t-d -u <address> <text> , --DELETE\n");
+	printf("\t-h,			 --HELP\n");
 
-	return USE_ERR;
+	exit(USE_ERR);
 }
 
 // returns concatnated string of arg values from main()
 char* getStr(int count, char* dest, char* src[])
 {
+	if (src[0] == "\0")
+	{
+		printf("Error: Text is required for this HTTP verb\n");
+		print_usage();
+	}
 	for (int i = 4; i < count; i++)
 	{
 		if (i != 4)
@@ -43,7 +51,7 @@ int main(int argc, char *argv[])
     uint32_t verbSelected = 0;
 
 	char urlBuffer[128];
-	char txtBuffer[256];
+	char txtBuffer[128];
 
 	CURL	*curl;
 	CURLcode  res;
@@ -51,11 +59,7 @@ int main(int argc, char *argv[])
 	struct curl_slist *headers = NULL;
 
 	curl = curl_easy_init();
-/*	if (curl)
-		printf("pass\n");
-	else
-		printf("fail\n");
-*/
+
     while((option = getopt(argc,  argv, "ogpdu:h")) !=-1)
     {
         switch(option)
@@ -64,16 +68,35 @@ int main(int argc, char *argv[])
 				print_usage();
 				break;
             case 'o':
+				if (argc < 4)
+				{
+					printf("Error: Missing arguments. \n");
+					print_usage();
+				}
 				verbSelected == 0x0u ? verbSelected = 0x1111u: print_usage();
 				break;
             case 'g':
+				if (argc < 4)
+				{
+					printf("Error: Missing arguments. \n");
+					print_usage();
+				}
 				verbSelected == 0x0u ? verbSelected = 0x3333u : print_usage();
-//				printf("so far so good\n");
 				break;
             case 'p':
+				if (argc < 4)
+				{
+					printf("Error: Missing arguments. \n");
+					print_usage();
+				}
 				verbSelected == 0x0u ? verbSelected = 0x5555u : print_usage();
 				break;
             case 'd':
+				if (argc < 4)
+				{
+					printf("Error: Missing arguments. \n");
+					print_usage();
+				}
 				verbSelected == 0x0u ? verbSelected = 0x7777u : print_usage();
 				break;
 			case 'u': // --url
