@@ -1,5 +1,5 @@
-/buildroot/output/host/usr/bin/arm-linux-gcc --sysroot=/buildroot/output/staging  -c networkCommARM.c -o networkCommARM.o
-/buildroot/output/host/usr/bin/arm-linux-gcc --sysroot=/buildroot/output/staging  -o test networkCommARM.o  -lcurl -uClibc -lc
+// /buildroot/output/host/usr/bin/arm-linux-gcc --sysroot=/buildroot/output/staging  -c networkCommARM.c -o networkCommARM.o
+// /buildroot/output/host/usr/bin/arm-linux-gcc --sysroot=/buildroot/output/staging  -o test networkCommARM.o  -lcurl -uClibc -lc
 
 #include <stdio.h>
 #include <stdint.h>
